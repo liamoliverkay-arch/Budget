@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BudgetWise — Personal Financial Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="13" stroke="#4CAF80" stroke-width="2"/>
+          <path d="M9 14 L13 18 L19 10" stroke="#4CAF80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>BudgetWise</span>
+      </div>
+      <p class="header-tagline">Your personal financial clarity tool</p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- STEP PROGRESS -->
+    <nav class="step-nav" aria-label="Progress">
+      <div class="step active" data-step="1"><span class="step-num">1</span><span class="step-label">About You</span></div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2"><span class="step-num">2</span><span class="step-label">Income & Tax</span></div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3"><span class="step-num">3</span><span class="step-label">Housing</span></div>
+      <div class="step-line"></div>
+      <div class="step" data-step="4"><span class="step-num">4</span><span class="step-label">Expenses</span></div>
+      <div class="step-line"></div>
+      <div class="step" data-step="5"><span class="step-num">5</span><span class="step-label">Goals</span></div>
+      <div class="step-line"></div>
+      <div class="step" data-step="6"><span class="step-num">6</span><span class="step-label">Summary</span></div>
+    </nav>
+
+    <!-- FORM SECTIONS -->
+    <div class="form-wrapper">
+
+      <!-- SECTION 1: About You -->
+      <section class="form-section active" id="section-1">
+        <div class="section-header">
+          <div class="section-header-row">
+            <div>
+              <h2>Tell us about yourself</h2>
+              <p>This helps personalize your budget plan.</p>
+            </div>
+            <button class="btn-randomize" onclick="randomizePerson()" title="Generate a random person">
+              🎲 Randomize Person
+            </button>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field full">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" placeholder="e.g. Alex Johnson" />
+          </div>
+          <div class="field half">
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="e.g. 30" min="18" max="100" />
+          </div>
+          <div class="field half">
+            <label for="location">City / State</label>
+            <input type="text" id="location" placeholder="e.g. Austin, TX" />
+          </div>
+          <div class="field half">
+            <label for="filing-status">Tax Filing Status</label>
+            <select id="filing-status">
+              <option value="single">Single</option>
+              <option value="married_joint">Married Filing Jointly</option>
+              <option value="married_sep">Married Filing Separately</option>
+              <option value="head">Head of Household</option>
+            </select>
+          </div>
+          <div class="field half">
+            <label for="dependents">Dependents</label>
+            <input type="number" id="dependents" placeholder="0" min="0" max="20" value="0" />
+          </div>
+          <div class="field full">
+            <label for="bio">A bit about you <span class="optional">(optional)</span></label>
+            <textarea id="bio" rows="3" placeholder="e.g. Software developer, recently moved to Austin. Enjoy hiking and cooking. Looking to build financial stability..."></textarea>
+          </div>
+        </div>
+        <div class="btn-row">
+          <div></div>
+          <button class="btn-primary" onclick="goTo(2)">Next: Income & Tax →</button>
+        </div>
+      </section>
+
+      <!-- SECTION 2: Income & Tax -->
+      <section class="form-section" id="section-2">
+        <div class="section-header">
+          <h2>Income & Taxes</h2>
+          <p>Enter your gross annual income — we'll estimate your tax burden automatically.</p>
+        </div>
+        <div class="field-grid">
+          <div class="field half">
+            <label for="gross-income">Gross Annual Income ($)</label>
+            <input type="number" id="gross-income" placeholder="e.g. 75000" min="0" oninput="calcTax()" />
+          </div>
+          <div class="field half">
+            <label for="other-income">Other Annual Income ($) <span class="optional">optional</span></label>
+            <input type="number" id="other-income" placeholder="e.g. 5000" min="0" value="0" oninput="calcTax()" />
+          </div>
+        </div>
+
+        <!-- Tax Breakdown Card -->
+        <div class="tax-card" id="tax-card">
+          <h3>Estimated Tax Breakdown</h3>
+          <div class="tax-grid">
+            <div class="tax-row">
+              <span>Gross Annual Income</span>
+              <span class="mono" id="t-gross">—</span>
+            </div>
+            <div class="tax-row indent">
+              <span>Federal Income Tax</span>
+              <span class="mono negative" id="t-federal">—</span>
+            </div>
+            <div class="tax-row indent">
+              <span>Social Security (6.2%)</span>
+              <span class="mono negative" id="t-ss">—</span>
+            </div>
+            <div class="tax-row indent">
+              <span>Medicare (1.45%)</span>
+              <span class="mono negative" id="t-medicare">—</span>
+            </div>
+            <div class="tax-row indent">
+              <span>Est. State Tax</span>
+              <span class="mono negative" id="t-state">—</span>
+            </div>
+            <div class="tax-divider"></div>
+            <div class="tax-row total">
+              <span>Take-Home (Annual)</span>
+              <span class="mono positive" id="t-annual">—</span>
+            </div>
+            <div class="tax-row total-sub">
+              <span>Take-Home (Monthly)</span>
+              <span class="mono positive" id="t-monthly">—</span>
+            </div>
+            <div class="tax-row total-sub">
+              <span>Take-Home (Bi-Weekly)</span>
+              <span class="mono positive" id="t-biweekly">—</span>
+            </div>
+          </div>
+          <p class="tax-disclaimer">* Estimates based on 2024 federal brackets. State tax uses a flat 5% estimate. Consult a tax professional for exact figures.</p>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="goTo(1)">← Back</button>
+          <button class="btn-primary" onclick="goTo(3)">Next: Housing →</button>
+        </div>
+      </section>
+
+      <!-- SECTION 3: Housing -->
+      <section class="form-section" id="section-3">
+        <div class="section-header">
+          <h2>Housing</h2>
+          <p>Your housing type shapes your entire financial picture.</p>
+        </div>
+
+        <div class="toggle-group" id="housing-toggle">
+          <button class="toggle-btn active" data-value="rent" onclick="selectHousing('rent', this)">🏠 Renting</button>
+          <button class="toggle-btn" data-value="mortgage" onclick="selectHousing('mortgage', this)">🏡 Mortgage</button>
+          <button class="toggle-btn" data-value="own" onclick="selectHousing('own', this)">✅ Own Outright</button>
+          <button class="toggle-btn" data-value="other" onclick="selectHousing('other', this)">👨‍👩‍👧 Other / Living with Family</button>
+        </div>
+
+        <!-- Rent Fields -->
+        <div class="housing-fields" id="fields-rent">
+          <div class="field-grid">
+            <div class="field half">
+              <label for="rent-amount">Monthly Rent ($)</label>
+              <input type="number" id="rent-amount" placeholder="e.g. 1500" min="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="rent-insurance">Renters Insurance / mo ($)</label>
+              <input type="number" id="rent-insurance" placeholder="e.g. 20" min="0" value="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="rent-util">Utilities / mo ($)</label>
+              <input type="number" id="rent-util" placeholder="e.g. 150" min="0" value="0" oninput="updateSummary()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Mortgage Fields -->
+        <div class="housing-fields hidden" id="fields-mortgage">
+          <div class="field-grid">
+            <div class="field half">
+              <label for="mortgage-payment">Monthly Mortgage Payment ($)</label>
+              <input type="number" id="mortgage-payment" placeholder="e.g. 1800" min="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="home-value">Estimated Home Value ($)</label>
+              <input type="number" id="home-value" placeholder="e.g. 350000" min="0" />
+            </div>
+            <div class="field half">
+              <label for="property-tax">Annual Property Tax ($)</label>
+              <input type="number" id="property-tax" placeholder="e.g. 4000" min="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="home-insurance">Home Insurance / yr ($)</label>
+              <input type="number" id="home-insurance" placeholder="e.g. 1200" min="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="hoa">HOA / mo ($)</label>
+              <input type="number" id="hoa" placeholder="0" min="0" value="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="mortgage-util">Utilities / mo ($)</label>
+              <input type="number" id="mortgage-util" placeholder="e.g. 200" min="0" value="0" oninput="updateSummary()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Own Outright -->
+        <div class="housing-fields hidden" id="fields-own">
+          <div class="field-grid">
+            <div class="field half">
+              <label for="own-property-tax">Annual Property Tax ($)</label>
+              <input type="number" id="own-property-tax" placeholder="e.g. 3000" min="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="own-insurance">Home Insurance / yr ($)</label>
+              <input type="number" id="own-insurance" placeholder="e.g. 1200" min="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="own-util">Utilities / mo ($)</label>
+              <input type="number" id="own-util" placeholder="e.g. 200" min="0" value="0" oninput="updateSummary()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Other -->
+        <div class="housing-fields hidden" id="fields-other">
+          <div class="field-grid">
+            <div class="field half">
+              <label for="other-housing">Monthly Housing Contribution ($)</label>
+              <input type="number" id="other-housing" placeholder="e.g. 500" min="0" value="0" oninput="updateSummary()" />
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="goTo(2)">← Back</button>
+          <button class="btn-primary" onclick="goTo(4)">Next: Expenses →</button>
+        </div>
+      </section>
+
+      <!-- SECTION 4: Monthly Expenses -->
+      <section class="form-section" id="section-4">
+        <div class="section-header">
+          <h2>Monthly Expenses</h2>
+          <p>Track where your money goes each month. Fill in what applies to you.</p>
+        </div>
+
+        <div class="expense-group">
+          <h4 class="expense-category">🚗 Transportation</h4>
+          <div class="field-grid">
+            <div class="field half"><label>Car Payment ($)</label><input type="number" class="expense" data-key="car_payment" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Car Insurance ($)</label><input type="number" class="expense" data-key="car_insurance" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Gas / Fuel ($)</label><input type="number" class="expense" data-key="gas" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Public Transit ($)</label><input type="number" class="expense" data-key="transit" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+          </div>
+        </div>
+
+        <div class="expense-group">
+          <h4 class="expense-category">🍕 Food & Dining</h4>
+          <div class="field-grid">
+            <div class="field half"><label>Groceries ($)</label><input type="number" class="expense" data-key="groceries" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Dining Out ($)</label><input type="number" class="expense" data-key="dining" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+          </div>
+        </div>
+
+        <div class="expense-group">
+          <h4 class="expense-category">📱 Subscriptions & Bills</h4>
+          <div class="field-grid">
+            <div class="field half"><label>Phone Bill ($)</label><input type="number" class="expense" data-key="phone" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Internet ($)</label><input type="number" class="expense" data-key="internet" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Streaming Services ($)</label><input type="number" class="expense" data-key="streaming" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Other Subscriptions ($)</label><input type="number" class="expense" data-key="subscriptions" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+          </div>
+        </div>
+
+        <div class="expense-group">
+          <h4 class="expense-category">💊 Health & Wellness</h4>
+          <div class="field-grid">
+            <div class="field half"><label>Health Insurance ($)</label><input type="number" class="expense" data-key="health_ins" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Gym / Fitness ($)</label><input type="number" class="expense" data-key="gym" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Prescriptions / Medical ($)</label><input type="number" class="expense" data-key="medical" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+          </div>
+        </div>
+
+        <div class="expense-group">
+          <h4 class="expense-category">💳 Debt Payments</h4>
+          <div class="field-grid">
+            <div class="field half"><label>Student Loans ($)</label><input type="number" class="expense" data-key="student_loans" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Credit Card Minimums ($)</label><input type="number" class="expense" data-key="credit_cards" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Other Debt ($)</label><input type="number" class="expense" data-key="other_debt" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+          </div>
+        </div>
+
+        <div class="expense-group">
+          <h4 class="expense-category">🎉 Personal & Lifestyle</h4>
+          <div class="field-grid">
+            <div class="field half"><label>Entertainment ($)</label><input type="number" class="expense" data-key="entertainment" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Clothing / Shopping ($)</label><input type="number" class="expense" data-key="shopping" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Personal Care ($)</label><input type="number" class="expense" data-key="personal_care" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Gifts / Donations ($)</label><input type="number" class="expense" data-key="gifts" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+          </div>
+        </div>
+
+        <div class="expense-group">
+          <h4 class="expense-category">💰 Savings & Investments</h4>
+          <div class="field-grid">
+            <div class="field half"><label>Emergency Fund ($)</label><input type="number" class="expense" data-key="emergency" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Retirement (401k/IRA) ($)</label><input type="number" class="expense" data-key="retirement" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+            <div class="field half"><label>Other Savings ($)</label><input type="number" class="expense" data-key="other_savings" placeholder="0" min="0" value="0" oninput="updateSummary()" /></div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="goTo(3)">← Back</button>
+          <button class="btn-primary" onclick="goTo(5)">Next: Goals →</button>
+        </div>
+      </section>
+
+      <!-- SECTION 5: Goals -->
+      <section class="form-section" id="section-5">
+        <div class="section-header">
+          <h2>Your Financial Goals</h2>
+          <p>Where do you want to be? Setting goals is the first step to getting there.</p>
+        </div>
+
+        <div class="field-grid">
+          <div class="field full">
+            <label for="short-goals">Short-Term Goals <span class="optional">(next 1–2 years)</span></label>
+            <textarea id="short-goals" rows="3" placeholder="e.g. Pay off credit card debt, build a 3-month emergency fund, save for a vacation..."></textarea>
+          </div>
+          <div class="field full">
+            <label for="long-goals">Long-Term Goals <span class="optional">(3–10+ years)</span></label>
+            <textarea id="long-goals" rows="3" placeholder="e.g. Buy a home, retire early, start a business, pay off student loans..."></textarea>
+          </div>
+        </div>
+
+        <div class="expense-group">
+          <h4 class="expense-category">🎯 Savings Targets</h4>
+          <div class="field-grid">
+            <div class="field half">
+              <label for="emergency-target">Emergency Fund Target ($)</label>
+              <input type="number" id="emergency-target" placeholder="e.g. 15000" min="0" oninput="updateSummary()" />
+            </div>
+            <div class="field half">
+              <label for="big-purchase">Major Purchase Goal ($)</label>
+              <input type="number" id="big-purchase" placeholder="e.g. 30000 down payment" min="0" />
+            </div>
+            <div class="field half">
+              <label for="retire-age">Retirement Age Target</label>
+              <input type="number" id="retire-age" placeholder="e.g. 65" min="30" max="80" />
+            </div>
+            <div class="field half">
+              <label for="retire-savings">Retirement Savings Target ($)</label>
+              <input type="number" id="retire-savings" placeholder="e.g. 1000000" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="goTo(4)">← Back</button>
+          <button class="btn-primary" onclick="goTo(6); buildSummary()">View My Summary →</button>
+        </div>
+      </section>
+
+      <!-- SECTION 6: Summary -->
+      <section class="form-section" id="section-6">
+        <div class="section-header">
+          <h2>Your Financial Summary</h2>
+          <p>Here's your complete picture — honest, clear, and yours.</p>
+        </div>
+
+        <!-- Health Score Ring -->
+        <div class="health-score-wrap">
+          <svg class="score-ring" viewBox="0 0 120 120" width="160" height="160">
+            <circle cx="60" cy="60" r="50" stroke="#E8EDF2" stroke-width="10" fill="none"/>
+            <circle id="score-arc" cx="60" cy="60" r="50" stroke="#4CAF80" stroke-width="10" fill="none"
+              stroke-dasharray="314" stroke-dashoffset="314"
+              stroke-linecap="round" transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="score-center">
+            <div class="score-num" id="score-num">—</div>
+            <div class="score-label">Financial Health</div>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid" id="summary-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Budget Bar -->
+        <div class="budget-bar-wrap">
+          <h3>Monthly Budget Breakdown</h3>
+          <div class="budget-bar" id="budget-bar"><!-- JS --></div>
+          <div class="budget-legend" id="budget-legend"><!-- JS --></div>
+        </div>
+
+        <!-- Insights -->
+        <div class="insights-wrap" id="insights-wrap">
+          <h3>💡 Personalized Insights</h3>
+          <div id="insights-list"></div>
+        </div>
+
+        <!-- Goals Summary -->
+        <div class="goals-summary" id="goals-summary"></div>
+
+        <!-- Actions -->
+        <div class="btn-row btn-row-summary">
+          <button class="btn-secondary" onclick="goTo(5)">← Edit Goals</button>
+          <button class="btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+          <button class="btn-secondary" onclick="resetAll()">🎲 New Random Person</button>
+        </div>
+      </section>
+
+    </div><!-- end form-wrapper -->
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>BudgetWise is a planning tool only. Tax estimates are approximations — consult a CPA for official advice.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
